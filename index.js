@@ -10,10 +10,28 @@ app.get("/api",(req, res)=>{
 });
 
 //posts created
-app.post('/api/posts/', (req, res)=>{
-    res.json({message:"Posts created..."})
+/*app.post('/api/posts/',verifyToken, (req, res)=>{
+    jwt.verify(req.token,'secretket',(err, authData)=>{
+        if(err){
+            res.sendStatus(403);//forbidden
+        }else{
+            res.json({message:"Posts created...",authData});
+        }
+    })
+});*/
+
+//posts created v2
+app.post("/api/posts/",verifyToken, (req,res)=>{
+    jwt.verify(req.token, 'secretkey',(err,authData)=>{
+        if(err){
+            res.sendStatus(403);
+        }else{
+            res.json({message:"Posts created....", authData});
+        }
+    })
 });
 
+//login with JWT
 app.post('/api/login',(req, res)=> {
     const user = {
         id: "1",
@@ -26,6 +44,20 @@ app.post('/api/login',(req, res)=> {
         });
     });
 });
+
+
+//verify token
+function verifyToken(req,res, next) {
+    const bearerHeader=req.headers['authorization'];
+    if(bearerHeader !== "undefined"){
+       // const bearerToken=bearerHeader.split(' ')[1];
+        const bearerToken = bearerHeader && bearerHeader.split(' ')[1];
+        req.token=bearerToken;
+        next();
+    }else {
+        res.sendStatus(403);//forbidden
+    }
+}
 
 
 
